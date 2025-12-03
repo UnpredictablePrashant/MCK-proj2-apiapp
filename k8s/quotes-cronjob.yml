@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: quotes-service-cronjob
+  labels:
+    app: quotes-service
+spec:
+  schedule: "0 8 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: quotes-service
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: quotes-service
+              image: needtoadd:latest #Notes: Need to add the repo here
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - configMapRef:
+                    name: quotes-service-config
+                - secretRef:
+                    name: quotes-service-openai
+              env:
+                - name: TZ
+                  value: UTC
